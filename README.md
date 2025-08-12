@@ -82,7 +82,10 @@
                 const spinner = document.getElementById('loadingSpinner');
                 
                 // Valida o link do YouTube
-                if (!link || !link.includes("youtube.com") && !link.includes("youtu.be")) {
+                const youtubeRegex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                const match = link.match(youtubeRegex);
+                
+                if (!match) {
                     statusMessageElement.innerHTML = `
                         <p class="text-red-500 font-semibold">❌ Por favor, insira um link válido do YouTube.</p>
                     `;
@@ -90,6 +93,8 @@
                     return;
                 }
                 
+                const videoId = match[1];
+
                 // Mostra a mensagem de "processando" e o spinner
                 statusMessageElement.innerHTML = `<p class="text-gray-600 font-semibold">⏳ Processando o download de ${tipo}...</p>`;
                 statusMessageElement.classList.remove('hidden');
@@ -101,7 +106,7 @@
                 // Como estamos em um ambiente de cliente (HTML/JS),
                 // simularemos a chamada a um servidor usando a API do Gemini.
                 
-                const prompt = `Simule uma resposta JSON de sucesso para um download de ${tipo} de um vídeo do YouTube. O título do vídeo é 'Exemplo de Música Pop'. A resposta deve ter a propriedade 'status': 'sucesso' e um 'download_link' fictício para o arquivo. O link original é '${link}'.`;
+                const prompt = `Simule uma resposta JSON de sucesso para um download de ${tipo} de um vídeo do YouTube com o ID ${videoId}. O título do vídeo é 'Exemplo de Música Pop'. A resposta deve ter a propriedade 'status': 'sucesso' e um 'download_link' fictício para o arquivo.`;
                 
                 let chatHistory = [];
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
